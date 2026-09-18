@@ -583,7 +583,23 @@ footer { padding: 96px 0 32px; background: var(--surface); overflow: hidden; }
 .mail a:not(.btn) { padding: 8px 0; }
 .cta-note { text-wrap: balance; }
 
-@media (max-width: 379px) { .nav .brand span { display: none; } }
+/* Mobile nav: the logo and the Free review button share one slot and take turns. main.js toggles .show-cta */
+@media (max-width: 767px) {
+  .js .nav { display: grid; grid-template-columns: auto auto; gap: 12px; padding-left: 8px; }
+  .js .nav .brand, .js .nav .nav-cta {
+    grid-area: 1 / 1; justify-self: center;
+    transition: opacity 900ms var(--ease), filter 900ms var(--ease), transform 900ms var(--ease), visibility 0ms linear 0ms;
+  }
+  .js .nav .brand { padding: 0 8px; }
+  .js .nav .nav-cta, .js .nav.show-cta .brand {
+    opacity: 0; filter: blur(8px); visibility: hidden; pointer-events: none;
+    transition-delay: 0ms, 0ms, 0ms, 900ms;
+  }
+  .js .nav .nav-cta { transform: translateY(12px); }
+  .js .nav.show-cta .brand { transform: translateY(-12px); }
+  .js .nav.show-cta .nav-cta { opacity: 1; filter: blur(0); transform: none; visibility: visible; pointer-events: auto; transition-delay: 200ms, 200ms, 200ms, 0ms; }
+  .js .nav .burger { grid-area: 1 / 2; }
+}
 
 @media (max-width: 767px) {
   section { padding: 48px 0; }

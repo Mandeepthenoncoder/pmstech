@@ -25,6 +25,23 @@
   $$('a', menu).forEach((a) => a.addEventListener('click', () => setMenu(false)));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 
+  // Mobile: the pill alternates between the logo and the Free review button.
+  const navEl = $('.nav');
+  const smallNav = matchMedia('(max-width: 767px)');
+  let swapTimer = 0;
+  const runSwap = () => {
+    clearInterval(swapTimer);
+    navEl.classList.remove('show-cta');
+    if (!smallNav.matches) return;
+    if (reduced) { navEl.classList.add('show-cta'); return; }   // no motion: keep the button, the menu still has the logo link
+    swapTimer = setInterval(() => {
+      if (document.hidden || menu.classList.contains('open')) return;
+      navEl.classList.toggle('show-cta');
+    }, 3200);
+  };
+  smallNav.addEventListener('change', runSwap);
+  runSwap();
+
   const navLinks = $$('.nav-links a');
   const byId = Object.fromEntries(navLinks.map((a) => [a.getAttribute('href').slice(1), a]));
   const activeIO = new IntersectionObserver((entries) => {
