@@ -58,7 +58,7 @@ create table if not exists public.applications (
 
   review_score  integer,
   status        text not null default 'new'
-                check (status in ('new','shortlist','interview','trial','hired','rejected','withdrawn')),
+                check (status in ('new','seen','awaiting','task','interview','hired','rejected','call_rejected')),
   notes         text,
 
   consent_at    timestamptz not null default now(),
