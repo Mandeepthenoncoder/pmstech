@@ -150,9 +150,9 @@ export const jobs = [
         help: 'Any medium. We care about the "what you did next" part.'
       },
       {
-        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
-        label: 'Link to content you have made.',
-        help: 'Your Instagram, a Reel, a YouTube video, anything you shot or cut yourself. Your own account is fine. If it is private, say so and we will ask.'
+        id: 'work', type: 'text', weight: 1, max: 600, review: true, link: true,
+        label: 'Links to content you have made.',
+        help: 'As many as you like, one per line. A profile, a Reel, a YouTube video, anything you shot or cut yourself. Handles such as @yourname work too. Your own account is fine.'
       },
       {
         id: 'q7', type: 'choice', weight: 1, ack: true,
@@ -375,9 +375,9 @@ export const jobs = [
         help: 'We want the decisions, not the brief.'
       },
       {
-        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
-        label: 'Link to your portfolio or recent work.',
-        help: 'Behance, Dribbble, Instagram or a Google Drive folder. Check the sharing is set so we can actually open it.'
+        id: 'work', type: 'text', weight: 1, max: 600, review: true, link: true,
+        label: 'Links to your portfolio or recent work.',
+        help: 'As many as you like, one per line. Behance, Dribbble, Instagram, a Drive folder, or a handle such as @yourname. Check the sharing is open so we can see it.'
       }
     ]
   },
@@ -479,9 +479,9 @@ export const jobs = [
         help: 'Short and concrete.'
       },
       {
-        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
-        label: 'Link to a site you have worked on.',
-        help: 'The site itself, or a case study or post you wrote about the work. Tell us in one line what part was yours.'
+        id: 'work', type: 'text', weight: 1, max: 600, review: true, link: true,
+        label: 'Links to sites you have worked on.',
+        help: 'As many as you like, one per line. The sites themselves, or a case study or post you wrote. Add a few words on what part was yours.'
       }
     ]
   },
@@ -587,9 +587,9 @@ export const jobs = [
         help: 'One line.'
       },
       {
-        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
-        label: 'Link to something you have edited.',
-        help: 'Instagram, YouTube or a Drive folder. Anything you cut yourself. Check the sharing is set so we can open it.'
+        id: 'work', type: 'text', weight: 1, max: 600, review: true, link: true,
+        label: 'Links to things you have edited.',
+        help: 'As many as you like, one per line. Instagram, YouTube, a Drive folder, or a channel handle such as @yourname. Anything you cut yourself.'
       }
     ]
   },

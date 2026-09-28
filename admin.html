@@ -104,6 +104,12 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
 .qa .a{font-size:16px;line-height:24px;padding:12px 14px;border-radius:12px;background:var(--s1);border:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere}
 .qa .a.work{border-color:var(--accent)}
 .qa .a a{overflow-wrap:anywhere}
+.wls{display:flex;flex-wrap:wrap;gap:8px}
+.wl{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 12px;border-radius:9999px;border:1px solid var(--line);background:var(--bg);color:var(--accent-t);text-decoration:none;font-size:14px;line-height:20px;overflow-wrap:anywhere;transition:all 700ms var(--ease)}
+.wl:hover{border-color:var(--accent);background:var(--s3)}
+.wl i{font-size:15px;flex:none;opacity:.8}
+.wl .hint{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:9999px;padding:0 6px}
+.wnote{display:block;margin-top:10px;color:var(--muted);font-size:14px;line-height:20px}
 
 .review{display:grid;gap:14px;padding:18px;border-radius:18px;border:1px solid var(--line);background:var(--s1)}
 .review label{font-size:13px;line-height:18px;font-weight:500;display:block;margin-bottom:6px}
@@ -277,6 +283,29 @@ function closeProfile() {
 }
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('profile').hidden) closeProfile(); });
 
+/* Work links. Candidates paste full URLs, bare domains, or bare handles, often
+   several at once. These rules match the ones the application form validates
+   with, so anything it accepted shows up here as something you can click. */
+const LINK_TOKEN = /^(https?:\/\/\S{4,}|(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/\S*)?|@[A-Za-z0-9._]{2,})$/i;
+function hrefFor(t) {
+  if (/^https?:\/\//i.test(t)) return t;
+  if (t.startsWith('@')) return 'https://www.instagram.com/' + t.slice(1);
+  return 'https://' + t;
+}
+function workLinksHtml(raw) {
+  const text = String(raw || '');
+  const parts = text.split(/[\s,]+/).map(t => t.replace(/[.,;)]+$/, '').trim()).filter(Boolean);
+  const links = parts.filter(t => LINK_TOKEN.test(t));
+  if (!links.length) return esc(text);
+  const words = parts.filter(t => !LINK_TOKEN.test(t)).join(' ');
+  const chips = links.map(t => {
+    const h = hrefFor(t);
+    const kind = t.startsWith('@') ? ' <span class="hint">handle</span>' : '';
+    return `<a class="wl" href="${esc(h)}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>${esc(t)}${kind}</a>`;
+  }).join('');
+  return `<span class="wls">${chips}</span>` + (words ? `<span class="wnote">${esc(words)}</span>` : '');
+}
+
 function drawProfile() {
   const r = rows.find(x => x.id === selId);
   if (!r) return closeProfile();
@@ -292,11 +321,7 @@ function drawProfile() {
     const meta = L.questions[k] || {};
     const text = Array.isArray(v) ? v.map(x => (meta.options || {})[x] || x).join(', ')
                                   : (meta.options || {})[v] || v;
-    const s = String(text).trim();
-    const isLink = /^(https?:\/\/|www\.)/i.test(s);
-    const body = isLink
-      ? `<a href="${esc(s.replace(/^www\./i, 'https://www.'))}" target="_blank" rel="noopener">${esc(s)}</a>`
-      : esc(text);
+    const body = k === 'work' ? workLinksHtml(text) : esc(text);
     return `<div><p class="q">${esc(meta.label || k)}</p><p class="a${k === 'work' ? ' work' : ''}">${body}</p></div>`;
   }).join('');
 
