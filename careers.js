@@ -11,7 +11,9 @@
   var SUPABASE_URL = window.PM_SUPABASE_URL || 'https://kvifzyskdmqtmteipvye.supabase.co';
   var SUPABASE_ANON_KEY = window.PM_SUPABASE_ANON_KEY || '';
   var FALLBACK_EMAIL = 'careers@purplemagicstudio.com';
-  var ENDPOINT = SUPABASE_URL.replace(/\/$/, '') + '/functions/v1/score-application';
+  // Postgres function, set up by supabase/setup.sql. It scores and stores the
+  // application. The anon key can call this and nothing else.
+  var ENDPOINT = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/rpc/submit_application';
 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -263,6 +265,7 @@
       email: state.email,
       answers: answers,
       consent: true,
+      source: String(window.location.pathname || ''),
       submitted_at: new Date().toISOString()
     };
   }
@@ -310,8 +313,12 @@
 
     fetch(ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
-      body: JSON.stringify(payload()),
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: 'Bearer ' + SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({ payload: payload() }),
       signal: ctrl.signal
     })
       .then(function (r) {
