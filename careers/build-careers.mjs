@@ -9,6 +9,7 @@ import { jobs, meta, commonQuestions } from './jobs.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');
+const SITE = 'https://purplemagic.tech';
 const POSTED = '2026-09-28';
 const VALID_THROUGH = '2026-12-31';
 
@@ -37,7 +38,7 @@ const publicQuestions = (job) =>
 
 const LOGO = `<svg aria-hidden="true" viewBox="0 0 512 512"><rect width="512" height="512" rx="112.4" fill="#7C3AED"/><path d="M319.2 74.0 L320.4 169.2 L410.6 138.6 L452.2 260.1 L362.0 290.8 L417.1 364.5 L314.6 441.2 L259.5 367.5 L204.6 445.3 L99.7 371.1 L154.6 293.3 L63.6 265.2 L101.3 142.8 L192.3 170.8 L191.1 75.6Z" fill="#fff"/></svg>`;
 
-const head = ({ title, desc, up, extraHead = '' }) => `<!doctype html>
+const head = ({ title, desc, up, canonical, extraHead = '' }) => `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -45,9 +46,12 @@ const head = ({ title, desc, up, extraHead = '' }) => `<!doctype html>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="theme-color" content="#000000">
+<link rel="canonical" href="${SITE}/${canonical}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="${SITE}/${canonical}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
+<meta property="og:image" content="${SITE}/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${up}favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -133,7 +137,13 @@ function rolePage(job) {
     validThrough: VALID_THROUGH,
     employmentType: 'FULL_TIME',
     directApply: true,
-    hiringOrganization: { '@type': 'Organization', name: 'Purple Magic', sameAs: 'https://purplemagicstudio.com' },
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: 'Purple Magic',
+      sameAs: SITE,
+      logo: `${SITE}/logo-mark.svg`
+    },
+    url: `${SITE}/careers/${job.slug}.html`,
     jobLocation: {
       '@type': 'Place',
       address: { '@type': 'PostalAddress', addressLocality: 'Hyderabad', addressRegion: 'Telangana', addressCountry: 'IN' }
@@ -143,7 +153,7 @@ function rolePage(job) {
 
   const extraHead = `<script type="application/ld+json">${JSON.stringify(schema)}</script>\n`;
 
-  return `${head({ title, desc, up: '../', extraHead })}
+  return `${head({ title, desc, up: '../', canonical: `careers/${job.slug}.html`, extraHead })}
 <main id="main" class="jd">
   <header class="jd-hero">
     <div class="container">
@@ -240,7 +250,7 @@ function indexPage() {
   const title = 'Careers at Purple Magic | Open roles in Hyderabad';
   const desc = 'Open roles at Purple Magic and the House of Mangatrai in Hyderabad. No CV needed. A five minute application that asks about the actual work.';
 
-  return `${head({ title, desc, up: '' })}
+  return `${head({ title, desc, up: '', canonical: 'careers.html' })}
 <main id="main">
   <header class="careers-hero">
     <div class="container">
@@ -310,6 +320,34 @@ for (const job of jobs) {
   }
 }
 writeFileSync(join(root, 'careers', 'question-labels.json'), JSON.stringify(labels));
+
+/* robots.txt and sitemap.xml. Google Jobs needs to be able to crawl the role
+   pages to pick up their JobPosting data. admin.html is kept out of both. */
+writeFileSync(join(root, 'robots.txt'),
+`User-agent: *
+Allow: /
+Disallow: /admin.html
+
+Sitemap: ${SITE}/sitemap.xml
+`);
+
+const urls = [
+  { loc: '', pri: '1.0' },
+  { loc: 'careers.html', pri: '0.9' },
+  ...jobs.map((j) => ({ loc: `careers/${j.slug}.html`, pri: '0.8' })),
+  { loc: 'privacy.html', pri: '0.2' },
+  { loc: 'terms.html', pri: '0.2' }
+];
+writeFileSync(join(root, 'sitemap.xml'),
+`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((u) => `  <url>
+    <loc>${SITE}/${u.loc}</loc>
+    <lastmod>${POSTED}</lastmod>
+    <priority>${u.pri}</priority>
+  </url>`).join('\n')}
+</urlset>
+`);
 let n = 1;
 for (const job of jobs) {
   writeFileSync(join(root, 'careers', `${job.slug}.html`), rolePage(job));
