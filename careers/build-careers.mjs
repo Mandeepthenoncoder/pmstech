@@ -9,7 +9,11 @@ import { jobs, meta, commonQuestions } from './jobs.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..');
-const SITE = 'https://purplemagic.tech';
+const SITE = 'https://www.purplemagic.tech';
+/* vercel.json sets cleanUrls, so /careers.html redirects to /careers.
+   Canonicals, og:url and the sitemap must name the URL that actually serves,
+   otherwise every one of them points at a redirect. */
+const clean = (p) => `${SITE}/${String(p).replace(/\.html$/, '').replace(/^index$/, '')}`;
 const POSTED = '2026-09-28';
 const VALID_THROUGH = '2026-12-31';
 
@@ -46,9 +50,9 @@ const head = ({ title, desc, up, canonical, extraHead = '' }) => `<!doctype html
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="theme-color" content="#000000">
-<link rel="canonical" href="${SITE}/${canonical}">
+<link rel="canonical" href="${clean(canonical)}">
 <meta property="og:type" content="website">
-<meta property="og:url" content="${SITE}/${canonical}">
+<meta property="og:url" content="${clean(canonical)}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${SITE}/og-image.png">
@@ -143,7 +147,7 @@ function rolePage(job) {
       sameAs: SITE,
       logo: `${SITE}/logo-mark.svg`
     },
-    url: `${SITE}/careers/${job.slug}.html`,
+    url: clean(`careers/${job.slug}.html`),
     jobLocation: {
       '@type': 'Place',
       address: { '@type': 'PostalAddress', addressLocality: 'Hyderabad', addressRegion: 'Telangana', addressCountry: 'IN' }
@@ -342,7 +346,7 @@ writeFileSync(join(root, 'sitemap.xml'),
 `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((u) => `  <url>
-    <loc>${SITE}/${u.loc}</loc>
+    <loc>${clean(u.loc)}</loc>
     <lastmod>${POSTED}</lastmod>
     <priority>${u.pri}</priority>
   </url>`).join('\n')}
