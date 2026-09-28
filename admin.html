@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Applications | Purple Magic</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+<style>
+:root{
+  --bg:#000; --s1:#181818; --s2:#1F1F1F; --s3:#272727; --line:#313131;
+  --text:#FFF; --muted:#9B9B9B; --accent:#7C3AED; --accent-t:#B794F6;
+  --ok:#4ADE80; --warn:#FBBF24; --bad:#F87171;
+  --ease:cubic-bezier(0.32,0.72,0,1);
+  --sans:"Geist",system-ui,sans-serif; --mono:"Geist Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:400 16px/24px var(--sans);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent-t);outline-offset:2px;border-radius:4px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9999px;border:1px solid transparent;font-size:14px;line-height:20px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 700ms var(--ease)}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+.p{background:var(--accent);color:#fff}
+.p:hover{background:var(--accent-t);color:#000}
+.g{background:transparent;border-color:var(--line);color:var(--text)}
+.g:hover{background:var(--s3)}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+
+/* login */
+.login{min-height:100dvh;display:grid;place-items:center;padding:24px}
+.login form{width:100%;max-width:360px;display:grid;gap:16px;background:var(--s1);border:1px solid var(--line);border-radius:24px;padding:32px}
+.login h1{font-size:24px;line-height:32px}
+.login label{display:block;font-size:14px;line-height:20px;font-weight:500;margin-bottom:8px}
+.login input{width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--bg)}
+.login input:focus-visible{border-color:var(--accent);outline:none}
+.err{font-size:14px;line-height:20px;color:var(--bad);min-height:20px}
+
+/* shell */
+.shell{display:none;min-height:100dvh;grid-template-rows:auto 1fr}
+.shell.on{display:grid}
+header.bar{position:sticky;top:0;z-index:10;display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:12px 16px;background:var(--s1);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.brand svg{width:24px;height:24px}
+.grow{flex:1}
+select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line);background:var(--bg);font-size:14px;line-height:20px}
+.search{min-width:160px}
+
+main{display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden}
+@media(min-width:1024px){main{grid-template-columns:minmax(0,1fr) 420px}}
+
+.list{overflow:auto;padding:16px;display:grid;gap:8px;align-content:start}
+.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-radius:16px;border:1px solid var(--line);background:var(--s1);cursor:pointer;text-align:left;transition:all 700ms var(--ease)}
+.row:hover{border-color:var(--muted)}
+.row.sel{border-color:var(--accent);background:var(--s2)}
+.score{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font:500 16px/1 var(--mono);background:var(--s3)}
+.score.hi{background:rgba(74,222,128,.15);color:var(--ok)}
+.score.mid{background:rgba(251,191,36,.15);color:var(--warn)}
+.score.lo{background:rgba(248,113,113,.12);color:var(--bad)}
+.who{display:grid;gap:2px;min-width:0}
+.who b{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.who span{font-size:13px;line-height:18px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-size:11px;line-height:16px;padding:2px 8px;border-radius:9999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.pill.ko{border-color:var(--bad);color:var(--bad)}
+.pill.flag{border-color:var(--warn);color:var(--warn)}
+.pill.st{border-color:var(--accent);color:var(--accent-t)}
+
+.panel{border-top:1px solid var(--line);background:var(--s1);overflow:auto;padding:24px;display:grid;gap:20px;align-content:start}
+@media(min-width:1024px){.panel{border-top:0;border-left:1px solid var(--line)}}
+.panel h2{font-size:20px;line-height:28px}
+.panel .meta{display:grid;gap:4px;font-size:14px;line-height:20px;color:var(--muted)}
+.panel .meta a{color:var(--accent-t)}
+.qa{display:grid;gap:14px}
+.qa .q{font-size:13px;line-height:18px;color:var(--muted)}
+.qa .a{font-size:15px;line-height:22px;padding:8px 12px;border-radius:10px;background:var(--s2);border:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere}
+.fields{display:grid;gap:12px;padding:16px;border-radius:16px;border:1px solid var(--line);background:var(--s2)}
+.fields label{font-size:13px;line-height:18px;font-weight:500;display:block;margin-bottom:6px}
+.fields select,.fields input,.fields textarea{width:100%;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:14px}
+.fields textarea{min-height:80px;resize:vertical}
+.saved{font-size:13px;color:var(--ok);min-height:18px}
+.empty{padding:48px 24px;text-align:center;color:var(--muted)}
+.count{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <form id="loginForm">
+    <h1>Applications</h1>
+    <p class="muted" style="font-size:14px;line-height:20px">Purple Magic careers. Sign in to review candidates.</p>
+    <div><label for="em">Email</label><input id="em" type="email" autocomplete="username" required></div>
+    <div><label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password" required></div>
+    <button class="btn p" type="submit" id="loginBtn" style="justify-content:center">Sign in</button>
+    <p class="err" id="loginErr"></p>
+  </form>
+</div>
+
+<div class="shell" id="shell">
+  <header class="bar">
+    <span class="brand"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#7C3AED"/><path d="M319 74l1 95 91-31 41 122-90 31 55 74-102 77-55-74-55 78-105-74 55-78-91-28 38-122 91 28-1-95Z" fill="#fff"/></svg>Applications</span>
+    <select id="fRole"><option value="">All roles</option></select>
+    <select id="fStatus">
+      <option value="">All statuses</option>
+      <option value="new">New</option><option value="shortlist">Shortlist</option>
+      <option value="interview">Interview</option><option value="trial">Trial</option>
+      <option value="hired">Hired</option><option value="rejected">Rejected</option>
+    </select>
+    <select id="fKo"><option value="hide">Hide knocked out</option><option value="show">Show everyone</option></select>
+    <input class="search" id="fSearch" type="search" placeholder="Name, email, reference">
+    <span class="grow"></span>
+    <span class="count" id="count"></span>
+    <button class="btn g" id="csv"><i class="ph ph-download-simple"></i>CSV</button>
+    <button class="btn g" id="out"><i class="ph ph-sign-out"></i>Sign out</button>
+  </header>
+  <main>
+    <div class="list" id="list"></div>
+    <aside class="panel" id="panel"><p class="empty">Pick a candidate to see their answers.</p></aside>
+  </main>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const SUPA_URL = 'https://kvifzyskdmqtmteipvye.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2aWZ6eXNrZG1xdG10ZWlwdnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1NzUzMzYsImV4cCI6MjEwNjE1MTMzNn0.z5sV6xilywfkR6OPA1jVFd4o4W0br0YH23XItbCuKa8';
+const db = createClient(SUPA_URL, ANON);
+
+const $ = (id) => document.getElementById(id);
+let rows = [], labels = {}, sel = null;
+
+fetch('careers/question-labels.json').then(r => r.ok ? r.json() : {}).then(d => { labels = d; }).catch(() => {});
+
+/* ---------------------------------------------------------------- auth */
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('loginErr').textContent = '';
+  $('loginBtn').disabled = true;
+  const { error } = await db.auth.signInWithPassword({ email: $('em').value.trim(), password: $('pw').value });
+  $('loginBtn').disabled = false;
+  if (error) { $('loginErr').textContent = error.message; return; }
+  start();
+});
+
+$('out').addEventListener('click', async () => { await db.auth.signOut(); location.reload(); });
+
+async function start() {
+  $('login').style.display = 'none';
+  $('shell').classList.add('on');
+  await load();
+}
+
+/* ---------------------------------------------------------------- data */
+async function load() {
+  const { data, error } = await db.from('applications').select('*').order('auto_score', { ascending: false });
+  if (error) {
+    $('list').innerHTML = `<p class="empty">Could not load applications.<br><span class="mono">${esc(error.message)}</span><br><br>If this says permission denied, your account is not on the admin list yet. Run <span class="mono">select public.add_admin('your@email');</span> in Supabase.</p>`;
+    return;
+  }
+  rows = data || [];
+  const roles = [...new Set(rows.map(r => r.role_title))].sort();
+  $('fRole').innerHTML = '<option value="">All roles</option>' + roles.map(r => `<option>${esc(r)}</option>`).join('');
+  render();
+}
+
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function filtered() {
+  const role = $('fRole').value, st = $('fStatus').value, ko = $('fKo').value;
+  const q = $('fSearch').value.trim().toLowerCase();
+  return rows.filter(r =>
+    (!role || r.role_title === role) &&
+    (!st || r.status === st) &&
+    (ko === 'show' || !r.knockout) &&
+    (!q || [r.name, r.email, r.reference, r.phone].join(' ').toLowerCase().includes(q))
+  );
+}
+
+function band(n) { return n >= 70 ? 'hi' : n >= 40 ? 'mid' : 'lo'; }
+
+function render() {
+  const list = filtered();
+  $('count').textContent = `${list.length} of ${rows.length}`;
+  $('list').innerHTML = list.length ? list.map(r => `
+    <button class="row${sel === r.id ? ' sel' : ''}" data-id="${r.id}">
+      <span class="score ${band(r.auto_score)}">${r.auto_score}</span>
+      <span class="who"><b>${esc(r.name)}</b><span>${esc(r.role_title)} &middot; ${esc(r.email)}</span></span>
+      <span class="pills">
+        ${r.knockout ? '<span class="pill ko">knocked out</span>' : ''}
+        ${(r.flags || []).map(f => `<span class="pill flag">${esc(f)}</span>`).join('')}
+        ${r.review_score != null ? `<span class="pill">written ${r.review_score}</span>` : ''}
+        <span class="pill st">${esc(r.status)}</span>
+      </span>
+    </button>`).join('') : '<p class="empty">Nothing matches those filters.</p>';
+
+  $('list').querySelectorAll('.row').forEach(b =>
+    b.addEventListener('click', () => { sel = b.dataset.id; render(); detail(); }));
+}
+
+function detail() {
+  const r = rows.find(x => x.id === sel);
+  if (!r) return;
+  const L = labels[r.role] || { questions: {} };
+  const qs = Object.entries(r.answers || {}).map(([k, v]) => {
+    const meta = L.questions[k] || {};
+    const text = Array.isArray(v)
+      ? v.map(x => (meta.options || {})[x] || x).join(', ')
+      : (meta.options || {})[v] || v;
+    return `<div><p class="q">${esc(meta.label || k)}</p><p class="a">${esc(text)}</p></div>`;
+  }).join('');
+
+  $('panel').innerHTML = `
+    <div>
+      <h2>${esc(r.name)}</h2>
+      <div class="meta">
+        <span>${esc(r.role_title)} &middot; ${esc(r.brand)}</span>
+        <span><a href="mailto:${esc(r.email)}">${esc(r.email)}</a></span>
+        <span><a href="https://wa.me/91${esc(String(r.phone).replace(/^\+?91/, ''))}" target="_blank" rel="noopener">${esc(r.phone)}</a></span>
+        <span class="mono">${esc(r.reference)} &middot; ${new Date(r.created_at).toLocaleString('en-IN')}</span>
+      </div>
+    </div>
+    <div class="fields">
+      <div><label for="dStatus">Stage</label><select id="dStatus">
+        ${['new','shortlist','interview','trial','hired','rejected','withdrawn'].map(s => `<option${s === r.status ? ' selected' : ''}>${s}</option>`).join('')}
+      </select></div>
+      <div><label for="dScore">Written answers, out of 100</label><input id="dScore" type="number" min="0" max="100" value="${r.review_score ?? ''}" placeholder="Not scored yet"></div>
+      <div><label for="dNotes">Private notes</label><textarea id="dNotes" placeholder="Only your team sees this.">${esc(r.notes || '')}</textarea></div>
+      <button class="btn p" id="dSave">Save</button>
+      <p class="saved" id="dSaved"></p>
+    </div>
+    <div class="qa">${qs || '<p class="muted">No answers recorded.</p>'}</div>`;
+
+  $('dSave').addEventListener('click', async () => {
+    const btn = $('dSave'); btn.disabled = true;
+    const raw = $('dScore').value.trim();
+    const patch = {
+      status: $('dStatus').value,
+      notes: $('dNotes').value.trim() || null,
+      review_score: raw === '' ? null : Math.max(0, Math.min(100, Number(raw)))
+    };
+    const { error } = await db.from('applications').update(patch).eq('id', r.id);
+    btn.disabled = false;
+    if (error) { $('dSaved').textContent = error.message; $('dSaved').style.color = 'var(--bad)'; return; }
+    Object.assign(r, patch);
+    $('dSaved').style.color = 'var(--ok)';
+    $('dSaved').textContent = 'Saved.';
+    setTimeout(() => { $('dSaved').textContent = ''; }, 2500);
+    render();
+  });
+}
+
+/* ---------------------------------------------------------------- csv */
+$('csv').addEventListener('click', () => {
+  const list = filtered();
+  if (!list.length) return;
+  const cols = ['reference','created_at','role_title','brand','name','email','phone','auto_score','review_score','knockout','flags','status','notes'];
+  const cell = (v) => {
+    if (v == null) return '';
+    const s = Array.isArray(v) ? v.join(' ') : String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const body = list.map(r => {
+    const base = cols.map(c => cell(r[c]));
+    const ans = Object.entries(r.answers || {}).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(' ') : v}`).join(' | ');
+    return base.concat(cell(ans)).join(',');
+  });
+  const csv = cols.concat('answers').join(',') + '\n' + body.join('\n');
+  // Byte order mark so Excel opens Indian names and rupee symbols correctly.
+  const href = window.URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' }));
+  const a = document.createElement('a');
+  a.href = href;
+  a.download = `applications-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  setTimeout(function () { window.URL.revokeObjectURL(href); }, 1000);
+});
+
+['fRole','fStatus','fKo','fSearch'].forEach(id => {
+  $(id).addEventListener('input', render);
+  $(id).addEventListener('change', render);
+});
+
+/* already signed in? */
+db.auth.getSession().then(({ data }) => { if (data.session) start(); });
+</script>
+</body>
+</html>

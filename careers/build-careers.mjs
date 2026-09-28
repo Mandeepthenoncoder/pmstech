@@ -295,6 +295,21 @@ ${footer('')}`;
 /* ------------------------------------------------------------------- write */
 mkdirSync(join(root, 'careers'), { recursive: true });
 writeFileSync(join(root, 'careers.html'), indexPage());
+
+/* Question text for the admin dashboard, so answers read as words not q3: b.
+   Labels only, never points. */
+const labels = {};
+for (const job of jobs) {
+  labels[job.slug] = { title: job.title, brand: job.brand, questions: {} };
+  for (const q of [...job.questions, ...commonQuestions]) {
+    labels[job.slug].questions[q.id] = {
+      label: q.label,
+      type: q.type,
+      options: Object.fromEntries((q.options || []).map((o) => [o.v, o.label]))
+    };
+  }
+}
+writeFileSync(join(root, 'careers', 'question-labels.json'), JSON.stringify(labels));
 let n = 1;
 for (const job of jobs) {
   writeFileSync(join(root, 'careers', `${job.slug}.html`), rolePage(job));
