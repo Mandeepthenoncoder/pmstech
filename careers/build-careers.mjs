@@ -252,7 +252,7 @@ function indexPage() {
     .join('\n      ');
 
   const title = 'Careers at Purple Magic | Open roles in Hyderabad';
-  const desc = 'Open roles at Purple Magic and the House of Mangatrai in Hyderabad. No CV needed. A five minute application that asks about the actual work.';
+  const desc = 'Open roles at Purple Magic and the jewellery houses we work with, in Hyderabad. No CV needed. A five minute application that asks about the actual work.';
 
   return `${head({ title, desc, up: '', canonical: 'careers.html' })}
 <main id="main">
