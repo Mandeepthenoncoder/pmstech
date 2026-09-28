@@ -12,6 +12,13 @@ const root = join(here, '..');
 const POSTED = '2026-09-28';
 const VALID_THROUGH = '2026-12-31';
 
+/* Supabase. The anon key is public by design and safe in the page: the schema
+   in supabase/setup.sql gives it no table access at all, only permission to
+   call submit_application(). The service role key must never appear here. */
+const SUPABASE_URL = 'https://kvifzyskdmqtmteipvye.supabase.co';
+const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2aWZ6eXNrZG1xdG10ZWlwdnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1NzUzMzYsImV4cCI6MjEwNjE1MTMzNn0.z5sV6xilywfkR6OPA1jVFd4o4W0br0YH23XItbCuKa8';
+
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -49,7 +56,11 @@ const head = ({ title, desc, up, extraHead = '' }) => `<!doctype html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
 <link rel="stylesheet" href="${up}styles.css">
 <link rel="stylesheet" href="${up}careers.css">
-<script>document.documentElement.classList.add('js')</script>
+<script>
+document.documentElement.classList.add('js');
+window.PM_SUPABASE_URL = ${JSON.stringify(SUPABASE_URL)};
+window.PM_SUPABASE_ANON_KEY = ${JSON.stringify(SUPABASE_ANON_KEY)};
+</script>
 ${extraHead}</head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
