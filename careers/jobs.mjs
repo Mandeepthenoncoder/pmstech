@@ -150,6 +150,11 @@ export const jobs = [
         help: 'Any medium. We care about the "what you did next" part.'
       },
       {
+        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
+        label: 'Link to content you have made.',
+        help: 'Your Instagram, a Reel, a YouTube video, anything you shot or cut yourself. Your own account is fine. If it is private, say so and we will ask.'
+      },
+      {
         id: 'q7', type: 'choice', weight: 1, ack: true,
         label: 'This role needs you on camera, in store on some weekends, and travelling between Baseerbagh and Kokapet. Does that work for you?',
         options: [
@@ -368,6 +373,11 @@ export const jobs = [
         id: 'q6', type: 'text', weight: 1, max: 400, review: true,
         label: 'Describe one piece of work you are proud of and what you personally decided in it.',
         help: 'We want the decisions, not the brief.'
+      },
+      {
+        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
+        label: 'Link to your portfolio or recent work.',
+        help: 'Behance, Dribbble, Instagram or a Google Drive folder. Check the sharing is set so we can actually open it.'
       }
     ]
   },
@@ -467,6 +477,11 @@ export const jobs = [
         id: 'q6', type: 'text', weight: 1, max: 400, review: true,
         label: 'A jewellery brand wants to be the answer when someone asks an AI "best lab grown diamond jeweller in Hyderabad". What are your first three moves?',
         help: 'Short and concrete.'
+      },
+      {
+        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
+        label: 'Link to a site you have worked on.',
+        help: 'The site itself, or a case study or post you wrote about the work. Tell us in one line what part was yours.'
       }
     ]
   },
@@ -572,10 +587,9 @@ export const jobs = [
         help: 'One line.'
       },
       {
-        id: 'q7', type: 'text', weight: 1, max: 400, review: true,
-        label: 'Send us a link to something you have edited.',
-        help: 'Paste a link. Instagram, YouTube or Drive is fine. Anything you cut yourself.',
-        link: true
+        id: 'work', type: 'text', weight: 1, max: 300, review: true, link: true,
+        label: 'Link to something you have edited.',
+        help: 'Instagram, YouTube or a Drive folder. Anything you cut yourself. Check the sharing is set so we can open it.'
       }
     ]
   },

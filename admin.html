@@ -79,6 +79,8 @@ main{display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden}
 .qa{display:grid;gap:14px}
 .qa .q{font-size:13px;line-height:18px;color:var(--muted)}
 .qa .a{font-size:15px;line-height:22px;padding:8px 12px;border-radius:10px;background:var(--s2);border:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere}
+.qa .a a{color:var(--accent-t)}
+.qa .a.work{border-color:var(--accent)}
 .fields{display:grid;gap:12px;padding:16px;border-radius:16px;border:1px solid var(--line);background:var(--s2)}
 .fields label{font-size:13px;line-height:18px;font-weight:500;display:block;margin-bottom:6px}
 .fields select,.fields input,.fields textarea{width:100%;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:14px}
@@ -211,7 +213,12 @@ function detail() {
     const text = Array.isArray(v)
       ? v.map(x => (meta.options || {})[x] || x).join(', ')
       : (meta.options || {})[v] || v;
-    return `<div><p class="q">${esc(meta.label || k)}</p><p class="a">${esc(text)}</p></div>`;
+    // Work links are the point of the question, so make them clickable.
+    const looksLikeLink = /^(https?:\/\/|www\.)/i.test(String(text).trim());
+    const body = looksLikeLink
+      ? `<a href="${esc(String(text).trim().replace(/^www\./i, 'https://www.'))}" target="_blank" rel="noopener">${esc(text)}</a>`
+      : esc(text);
+    return `<div><p class="q">${esc(meta.label || k)}</p><p class="a${k === 'work' ? ' work' : ''}">${body}</p></div>`;
   }).join('');
 
   $('panel').innerHTML = `
