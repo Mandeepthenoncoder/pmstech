@@ -11,13 +11,14 @@ No CV. Answers are scored per role, server side, and land in Supabase.
 |---|---|
 | `careers/jobs.mjs` | **The only file you edit.** Every role, every question, every point value. |
 | `careers/build-careers.mjs` | Generates `careers.html` and the six role pages. |
-| `careers/build-answer-key.mjs` | Generates the answer key the server scores against. |
+| `careers/build-answer-key.mjs` | Generates the answer key. |
+| `careers/build-sql.mjs` | Generates `supabase/setup.sql`, the one file you paste into Supabase. |
 | `careers/test-scoring.mjs` | Checks the scoring and that no points leak into the page. |
 | `careers.html` | Generated. The index of open roles. |
 | `careers/<slug>.html` | Generated. One page per role, with the application on it. |
 | `careers.css`, `careers.js` | Styling and the form. Hand written. |
-| `supabase/schema.sql` | Run once in Supabase. |
-| `supabase/functions/score-application/` | The edge function that scores and stores. |
+| `supabase/setup.sql` | **Paste this into the Supabase SQL editor.** Table, answer key, scoring function, shortlist view. Generated. |
+| `supabase/schema.sql`, `supabase/functions/` | The edge function alternative. Not needed if you use `setup.sql`. |
 
 Generated files are committed, so the site stays a plain static site with no build step at deploy time.
 
@@ -25,9 +26,9 @@ Generated files are committed, so the site stays a plain static site with no bui
 
 ```bash
 node careers/build-answer-key.mjs   # if you changed points
+node careers/build-sql.mjs          # if you changed points
 node careers/build-careers.mjs      # always
 node careers/test-scoring.mjs       # always
-supabase functions deploy score-application   # if points changed
 ```
 
 ---
@@ -36,31 +37,38 @@ supabase functions deploy score-application   # if points changed
 
 If the scoring lived in `careers.js`, any candidate could open the page source and read the answer key.
 
-So the browser receives the questions and the options, and nothing else. It posts the raw answers to the `score-application` edge function, which holds the points, works out the score and writes the row. `careers/test-scoring.mjs` fails the build if points ever appear in a generated page.
+So the browser receives the questions and the options, and nothing else. It posts the raw answers to `submit_application()` in Postgres, which holds the points, works out the score and writes the row. `careers/test-scoring.mjs` fails the build if points ever appear in a generated page.
+
+If you changed points, re-run `build-sql.mjs` and paste `setup.sql` again.
 
 ---
 
 ## 3. Supabase setup
 
-Project `kvifzyskdmqtmteipvye`.
+Project `kvifzyskdmqtmteipvye`. Two steps, no command line needed.
 
-### a. Create the table
+### a. Run the SQL
 
-Paste `supabase/schema.sql` into the Supabase SQL editor and run it.
+Open the Supabase SQL editor, paste the whole of **`supabase/setup.sql`**, press Run. Safe to run again any time.
 
-It creates `applications`, turns on row level security with **no policies for anon**, so nothing can be read or written from a browser, and adds an `application_shortlist` view for reviewing.
+It creates:
 
-### b. Deploy the function
+- `applications` — the rows you will read
+- `role_answer_key` — the points, in a table the public key cannot read
+- `submit_application(jsonb)` — the one function the website may call. It validates, scores and stores, all inside Postgres
+- `application_shortlist` — a view for reviewing, strongest first
 
-```bash
-supabase link --project-ref kvifzyskdmqtmteipvye
-supabase functions deploy score-application --no-verify-jwt
-supabase secrets set ALLOWED_ORIGIN=https://your-domain.com
+Row level security is on for both tables with **no policies**, so the public key can read and write nothing directly. Its only permission is `execute` on that one function. Verified: as `anon`, `select` on `applications`, `role_answer_key` and `application_shortlist` all return *permission denied*, while `submit_application` succeeds.
+
+Check it worked:
+
+```sql
+select role, title, max_points from public.role_answer_key order by role;
 ```
 
-`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically. The service role key must never appear in any file in this repo.
+Six rows.
 
-### c. Give the site the anon key
+### b. Give the site the anon key
 
 The anon key is public by design, but it is not in this repo. Add it in the page, before `careers.js` loads:
 
@@ -69,6 +77,8 @@ The anon key is public by design, but it is not in this repo. Add it in the page
 ```
 
 Add that line to the `head()` template in `careers/build-careers.mjs`, then rebuild.
+
+The anon key is safe in the page: the schema gives it no table access at all. **Never put the `service_role` key anywhere in this repo.**
 
 **Until you do this, the form still works**: it falls back to opening the candidate's email app with all their answers filled in, addressed to `careers@purplemagicstudio.com`. It also falls back if Supabase is unreachable, so an application is never lost.
 
@@ -127,8 +137,7 @@ Both are real parts of those jobs and both are legitimate to state. Neither is a
 
 ## 7. Still to do
 
-- [ ] Run `schema.sql` in Supabase
-- [ ] Deploy `score-application` and set `ALLOWED_ORIGIN`
+- [ ] Paste `supabase/setup.sql` into the Supabase SQL editor and run it
 - [ ] Add the anon key to the page template and rebuild
 - [ ] Confirm the office address for the SEO role (currently "Baseerbagh, Hyderabad")
 - [ ] Confirm the Inside Sales location (currently just "Hyderabad")
