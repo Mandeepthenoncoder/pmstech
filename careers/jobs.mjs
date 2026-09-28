@@ -8,7 +8,7 @@
    Keep answer points here and in supabase/functions/score-application in step. */
 
 export const meta = {
-  brandLine: 'Purple Magic hires for our own studio and for the House of Mangatrai.',
+  brandLine: 'Purple Magic hires for our own studio and for the jewellery houses we work with.',
   city: 'Hyderabad',
   replyPromise: 'Every application is read. You hear back within five working days, yes or no.',
   contactEmail: 'careers@purplemagicstudio.com',
@@ -56,15 +56,15 @@ export const jobs = [
   {
     slug: 'content-creator-the-lab',
     title: 'Content Creator',
-    brand: 'The LAB by Mangatrai',
-    team: 'Lab grown diamonds',
+    brand: 'Lab grown diamond brand',
+    team: 'Client of Purple Magic',
     type: 'Full time',
     workplace: 'On site',
     location: 'Baseerbagh office and Kokapet store, Hyderabad',
     openings: 1,
     blurb: 'Make the daily content for a brand new lab grown diamond brand. You shoot it, you are in it, you cut it.',
     about: [
-      'The LAB is the House of Mangatrai’s lab grown diamond brand. The Kokapet store has just opened, which means almost nothing has been made yet. You would be the person making it.',
+      'A new lab grown diamond brand from a long established Hyderabad jewellery house. The Kokapet store has just opened, which means almost nothing has been made yet. You would be the person making it.',
       'You work out of the Purple Magic office near Baseerbagh and shoot at the Kokapet store. Both, most weeks.'
     ],
     doing: [
@@ -170,15 +170,15 @@ export const jobs = [
   {
     slug: 'customer-relationship-executive',
     title: 'Customer Relationship Executive',
-    brand: 'Mangatrai Jewels',
-    team: 'Retail',
+    brand: 'Jewellery showroom, Kokapet',
+    team: 'Client of Purple Magic',
     type: 'Full time',
     workplace: 'On site',
     location: 'Kokapet store, Hyderabad',
     openings: 2,
     blurb: 'Look after customers on the shop floor from the moment they walk in to the moment they buy, and after.',
     about: [
-      'Mangatrai has been selling jewellery in Hyderabad for generations. The Kokapet store is the newest address, and the floor team there is being built now.',
+      'A jewellery house that has been selling in Hyderabad for generations. The Kokapet store is its newest address, and the floor team there is being built now.',
       'This is not a cashier job. You own the customer’s whole visit.'
     ],
     doing: [
@@ -282,15 +282,15 @@ export const jobs = [
   {
     slug: 'graphic-designer-ai',
     title: 'Graphic Designer, AI first',
-    brand: 'Mangatrai Jewels',
-    team: 'Design',
+    brand: 'Jewellery house, Baseerbagh',
+    team: 'Client of Purple Magic',
     type: 'Full time',
     workplace: 'On site',
     location: 'Baseerbagh, Hyderabad',
     openings: 1,
     blurb: 'Design for a heritage jewellery house, with AI doing the heavy lifting and you holding the taste.',
     about: [
-      'Mangatrai runs several brands, from heritage gold to lab grown diamonds. They all need artwork, constantly.',
+      'The client runs several brands, from heritage gold to lab grown diamonds. They all need artwork, constantly.',
       'We already use AI image tools every day in this studio. We need a designer who can drive them properly, not someone who is scared of them or someone who trusts them blindly.'
     ],
     doing: [
@@ -493,13 +493,13 @@ export const jobs = [
     brand: 'Purple Magic',
     team: 'Founder content',
     type: 'Full time',
-    workplace: 'Work from home',
-    location: 'Remote, India. Occasional Hyderabad meets.',
+    workplace: 'On site',
+    location: 'Baseerbagh, Hyderabad',
     openings: 1,
     blurb: 'Personal editor for Mandeep’s channel. Two Reels and one long form video, every week.',
     about: [
       'Mandeep teaches AI tools and workflows to business owners, on camera. The channel is the front door to everything Purple Magic does.',
-      'This is a dedicated seat. One editor, one channel, a steady weekly rhythm.'
+      'This is a dedicated seat in the Baseerbagh studio. One editor, one channel, a steady weekly rhythm. We provide the machine.'
     ],
     doing: [
       'Cut two Reels and one long form video every week',
@@ -511,16 +511,15 @@ export const jobs = [
     ],
     reality: [
       'The weekly rhythm does not pause. Two Reels and one long form, every week, is the job.',
-      'You work from home, so the bar for reliability is higher, not lower. Deadlines are the whole deal.',
-      'You need your own laptop that can actually run After Effects without you apologising for it.',
+      'This is an in studio role at Baseerbagh, not remote. You sit with the founder and cut.',
+      'Shoot days and edit days run into each other. Some weeks are lumpy.',
       'Feedback can be blunt and fast. Revisions are part of the work, not an insult.',
       'You will be judged on retention and sends, not on how clever the effects were.'
     ],
     need: [
       'Premiere or Final Cut, and real After Effects ability',
-      'Your own laptop, able to handle the work',
       'You understand what makes a Reel keep people watching',
-      'Reliable internet and a reachable working pattern',
+      'You can work in the Baseerbagh studio every day',
       'You hit deadlines without being chased'
     ],
     bonus: [
@@ -573,12 +572,13 @@ export const jobs = [
         ]
       },
       {
-        id: 'q5', type: 'choice', weight: 1, required: true,
-        label: 'What laptop would you be working on?',
+        id: 'q5', type: 'choice', weight: 1, required: true, ack: true,
+        label: 'This is full time in our Baseerbagh studio, five days a week, with two Reels and one long form due every week. Does that work?',
+        help: 'We provide the machine and the software.',
         options: [
-          { v: 'strong', label: 'Apple silicon Mac, or a PC with a dedicated GPU and 16GB or more', p: 10 },
-          { v: 'ok', label: 'Something that runs After Effects, but slowly', p: 4 },
-          { v: 'none', label: 'I do not have my own machine yet', p: 0, knockout: true }
+          { v: 'yes', label: 'Yes, in studio and that weekly output are both fine', p: 10 },
+          { v: 'maybe', label: 'The output is fine, I would want to discuss the days in studio', p: 4 },
+          { v: 'no', label: 'No, I am looking for remote or freelance work', p: 0, knockout: true }
         ]
       },
       {
@@ -598,15 +598,15 @@ export const jobs = [
   {
     slug: 'inside-sales-the-lab',
     title: 'Inside Sales Executive',
-    brand: 'The LAB by Mangatrai',
-    team: 'Calling team',
+    brand: 'Lab grown diamond brand',
+    team: 'Client of Purple Magic',
     type: 'Full time',
     workplace: 'On site',
     location: 'Hyderabad',
     openings: 3,
     blurb: 'Turn Instagram and Facebook enquiries into people who actually walk into the store.',
     about: [
-      'We run ads for The LAB. They produce enquiries every day. Right now too many of those enquiries go cold before anyone reaches them.',
+      'We run the ads for this brand. They produce enquiries every day. Right now too many of those enquiries go cold before anyone reaches them.',
       'This team fixes that. You call fast, you qualify honestly, you book the visit and you make sure they turn up.'
     ],
     doing: [
