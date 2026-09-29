@@ -105,7 +105,7 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
 .qa .a.work{border-color:var(--accent)}
 .qa .a a{overflow-wrap:anywhere}
 .wls{display:flex;flex-wrap:wrap;gap:8px}
-.wl{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 12px;border-radius:9999px;border:1px solid var(--line);background:var(--bg);color:var(--accent-t);text-decoration:none;font-size:14px;line-height:20px;overflow-wrap:anywhere;transition:all 700ms var(--ease)}
+.wl{font:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 12px;border-radius:9999px;border:1px solid var(--line);background:var(--bg);color:var(--accent-t);text-decoration:none;font-size:14px;line-height:20px;overflow-wrap:anywhere;transition:all 700ms var(--ease)}
 .wl:hover{border-color:var(--accent);background:var(--s3)}
 .wl i{font-size:15px;flex:none;opacity:.8}
 .wl .hint{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:9999px;padding:0 6px}
@@ -118,6 +118,37 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
 .moveErr{width:100%;margin:0 0 10px;padding:10px 14px;border-radius:12px;border:1px solid var(--bad);background:rgba(248,113,113,.12);color:var(--bad);font-size:14px;line-height:20px}
 .moveErr[hidden]{display:none}
 .moveErr b{display:block;margin-bottom:2px}
+
+.roles-wrap{padding:24px 16px 48px}
+.roles{max-width:1000px;margin:0 auto;display:grid;gap:12px}
+@media(min-width:760px){.roles{grid-template-columns:1fr 1fr}}
+.role{display:grid;gap:14px;padding:20px;border-radius:20px;border:1px solid var(--line);background:var(--s1);cursor:pointer;text-align:left;transition:all 700ms var(--ease)}
+.role:hover{border-color:var(--accent);transform:translateY(-2px)}
+.role h2{font-size:20px;line-height:28px}
+.role .sub{font-size:13px;line-height:18px;color:var(--muted)}
+.role .nums{display:flex;flex-wrap:wrap;gap:8px}
+.num{display:inline-flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:9999px;border:1px solid var(--line);font-size:13px;line-height:18px;color:var(--muted)}
+.num b{font-family:var(--mono);font-size:15px;color:var(--text)}
+.num.hot{border-color:var(--accent);color:var(--accent-t)}
+.num.hot b{color:var(--accent-t)}
+.role .last{font-size:12px;line-height:16px;color:var(--muted)}
+.when{font-family:var(--mono);font-size:12px;line-height:16px;color:var(--muted);white-space:nowrap}
+.row .when{margin-right:2px}
+
+.verdicts{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+.verdicts .btn{flex:1;min-width:150px}
+
+.modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none}
+.modal-in{width:min(460px,100%);max-height:92dvh;display:grid;grid-template-rows:auto 1fr auto;background:var(--s1);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.modal-top{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.modal-top .u{flex:1;min-width:0;font-family:var(--mono);font-size:12px;line-height:16px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal-body{background:#000;display:grid;place-items:center;min-height:320px;overflow:auto}
+.modal-body iframe{width:100%;height:min(70dvh,640px);border:0;display:block}
+.modal-msg{padding:40px 24px;text-align:center;color:var(--muted);font-size:14px;line-height:20px;display:grid;gap:14px;justify-items:center}
+.modal-foot{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px;border-top:1px solid var(--line);align-items:center}
+.modal-foot .grow{flex:1}
+.redir{font-size:12px;line-height:16px;color:var(--warn)}
 
 .review{display:grid;gap:14px;padding:18px;border-radius:18px;border:1px solid var(--line);background:var(--s1)}
 .review label{font-size:13px;line-height:18px;font-weight:500;display:block;margin-bottom:6px}
@@ -153,11 +184,22 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
   </form>
 </div>
 
+<div class="home" id="home" hidden>
+  <header class="bar">
+    <span class="brand"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#7C3AED"/><path d="M319 74l1 95 91-31 41 122-90 31 55 74-102 77-55-74-55 78-105-74 55-78-91-28 38-122 91 28-1-95Z" fill="#fff"/></svg>Applications</span>
+    <span class="grow"></span>
+    <span class="count" id="homeCount"></span>
+    <button class="btn g sm" id="outHome"><i class="ph ph-sign-out"></i>Sign out</button>
+  </header>
+  <div class="roles-wrap"><div class="roles" id="roles"></div></div>
+</div>
+
 <div class="shell" id="shell" hidden>
   <header class="bar">
     <span class="brand"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#7C3AED"/><path d="M319 74l1 95 91-31 41 122-90 31 55 74-102 77-55-74-55 78-105-74 55-78-91-28 38-122 91 28-1-95Z" fill="#fff"/></svg>Applications</span>
-    <select id="fRole"><option value="">All roles</option></select>
-    <input class="search" id="fSearch" type="search" placeholder="Name, email, reference">
+    <button class="btn g sm" id="toHome"><i class="ph ph-arrow-left"></i>All jobs</button>
+    <span class="count" id="roleName"></span>
+    <input class="search" id="fSearch" type="search" placeholder="Name, email, handle">
     <span class="grow"></span>
     <span class="count" id="count"></span>
     <button class="btn g sm" id="csv"><i class="ph ph-download-simple"></i>CSV</button>
@@ -180,6 +222,23 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
   </div>
 </div>
 
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="Preview">
+  <div class="modal-in">
+    <div class="modal-top">
+      <i class="ph ph-link" aria-hidden="true"></i>
+      <span class="u" id="mUrl"></span>
+      <button class="btn g sm" id="mClose" aria-label="Close preview"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+    <div class="modal-foot">
+      <span class="redir" id="mNote"></span>
+      <span class="grow"></span>
+      <button class="btn g sm" id="mCopy"><i class="ph ph-copy"></i>Copy link</button>
+      <a class="btn p sm" id="mOpen" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>Open</a>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
@@ -190,18 +249,36 @@ const $ = (id) => document.getElementById(id);
 
 /* The pipeline. `next` is what the Proceed button does. */
 const STAGES = [
-  { id: 'new',           label: 'New in',              next: 'seen' },
-  { id: 'seen',          label: 'Saw the profile',     next: 'awaiting' },
-  { id: 'awaiting',      label: 'Awaiting input',      next: 'task' },
-  { id: 'task',          label: 'Given task',          next: 'interview' },
-  { id: 'interview',     label: 'Called for interview', next: 'hired' },
-  { id: 'hired',         label: 'Hired',               next: null },
-  { id: 'rejected',      label: 'Rejected',            next: null, end: true },
-  { id: 'call_rejected', label: 'Called, rejected',    next: null, end: true }
+  { id: 'new',           label: 'New in' },
+  { id: 'relevant',      label: 'Relevant' },
+  { id: 'considered',    label: 'Can be considered' },
+  { id: 'seen',          label: 'Saw the profile' },
+  { id: 'awaiting',      label: 'Awaiting input' },
+  { id: 'task',          label: 'Given task' },
+  { id: 'interview',     label: 'Called for interview' },
+  { id: 'hired',         label: 'Hired' },
+  { id: 'rejected',      label: 'Rejected' },
+  { id: 'call_rejected', label: 'Called, rejected' }
 ];
+/* The three calls you make on almost every profile. Everything else is a
+   move-to chip, so the common decision stays one tap. */
+const VERDICTS = [
+  { id: 'rejected',   label: 'Rejected',          cls: 'danger', icon: 'ph-x' },
+  { id: 'considered', label: 'Can be considered', cls: 'g',      icon: 'ph-bookmark-simple' },
+  { id: 'relevant',   label: 'Relevant',          cls: 'p',      icon: 'ph-check' }
+];
+
+function ago(iso) {
+  const s = Math.max(0, (Date.now() - new Date(iso)) / 1000);
+  if (s < 60) return 'just now';
+  const m = s / 60; if (m < 60) return Math.floor(m) + 'm ago';
+  const h = m / 60; if (h < 24) return Math.floor(h) + 'h ago';
+  const d = h / 24; if (d < 7) return Math.floor(d) + 'd ago';
+  return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
 const stage = (id) => STAGES.find(s => s.id === id) || STAGES[0];
 
-let rows = [], labels = {}, bucket = 'new', selId = null;
+let rows = [], labels = {}, bucket = 'new', selId = null, roleFilter = null;
 
 fetch('careers/question-labels.json').then(r => r.ok ? r.json() : {}).then(d => { labels = d; }).catch(() => {});
 
@@ -222,8 +299,62 @@ $('out').addEventListener('click', async () => { await db.auth.signOut(); locati
 
 async function start() {
   $('login').hidden = true;
-  $('shell').hidden = false;
   await load();
+  showHome();
+}
+
+/* Home: one card per role, so you pick a job and then work its pile. */
+function showHome() {
+  roleFilter = null; selId = null;
+  $('shell').hidden = true; $('profile').hidden = true;
+  $('home').hidden = false;
+  window.scrollTo(0, 0);
+
+  const byRole = new Map();
+  rows.forEach(r => {
+    if (!byRole.has(r.role)) byRole.set(r.role, { title: r.role_title, brand: r.brand, list: [] });
+    byRole.get(r.role).list.push(r);
+  });
+
+  $('homeCount').textContent = `${rows.length} application${rows.length === 1 ? '' : 's'} in total`;
+
+  const cards = [...byRole.entries()]
+    .sort((a, b) => b[1].list.filter(r => r.status === 'new').length - a[1].list.filter(r => r.status === 'new').length)
+    .map(([slug, v]) => {
+      const n = (st) => v.list.filter(r => r.status === st).length;
+      const latest = v.list.reduce((m, r) => (!m || r.created_at > m ? r.created_at : m), null);
+      return `<div class="role" data-role="${esc(slug)}" role="button" tabindex="0">
+        <div>
+          <h2>${esc(v.title)}</h2>
+          <p class="sub">${esc(v.brand)}</p>
+        </div>
+        <div class="nums">
+          <span class="num${n('new') ? ' hot' : ''}"><b>${n('new')}</b> new in</span>
+          <span class="num"><b>${n('relevant')}</b> relevant</span>
+          <span class="num"><b>${n('considered')}</b> considered</span>
+          <span class="num"><b>${v.list.filter(r => r.starred).length}</b> starred</span>
+          <span class="num"><b>${v.list.length}</b> total</span>
+        </div>
+        ${latest ? `<p class="last">Latest ${esc(ago(latest))}</p>` : ''}
+      </div>`;
+    }).join('');
+
+  $('roles').innerHTML = cards || '<p class="empty">No applications yet. They will appear here as they come in.</p>';
+  $('roles').querySelectorAll('.role').forEach(c => {
+    const go = () => openRole(c.dataset.role);
+    c.addEventListener('click', go);
+    c.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+function openRole(slug) {
+  roleFilter = slug;
+  bucket = 'new';
+  $('home').hidden = true;
+  $('shell').hidden = false;
+  $('fSearch').value = '';
+  window.scrollTo(0, 0);
+  render();
 }
 
 async function load() {
@@ -233,17 +364,14 @@ async function load() {
     return;
   }
   rows = data || [];
-  const roles = [...new Set(rows.map(r => r.role_title))].sort();
-  $('fRole').innerHTML = '<option value="">All roles</option>' + roles.map(r => `<option>${esc(r)}</option>`).join('');
-  render();
+
 }
 
 /* -------------------------------------------------------------- listing */
 function matchesFilters(r) {
-  const role = $('fRole').value;
   const q = $('fSearch').value.trim().toLowerCase();
-  return (!role || r.role_title === role) &&
-         (!q || [r.name, r.email, r.reference, r.phone].join(' ').toLowerCase().includes(q));
+  return (!roleFilter || r.role === roleFilter) &&
+         (!q || [r.name, r.email, r.reference, r.phone, r.answers && r.answers.ig].join(' ').toLowerCase().includes(q));
 }
 const inBucket = () => bucket === '@starred'
   ? rows.filter(r => matchesFilters(r) && r.starred)
@@ -261,7 +389,9 @@ function render() {
     b.addEventListener('click', () => { bucket = b.dataset.b; render(); }));
 
   const list = inBucket();
-  $('count').textContent = `${base.length} in total`;
+  const cur = rows.find(r => r.role === roleFilter);
+  $('roleName').textContent = cur ? cur.role_title : '';
+  $('count').textContent = `${base.length} in this job`;
   $('list').innerHTML = list.length ? list.map(r => `
     <div class="row" data-id="${r.id}" role="button" tabindex="0">
       <span class="score ${band(r.auto_score)}">${r.auto_score}</span>
@@ -271,6 +401,7 @@ function render() {
         ${(r.flags || []).map(f => `<span class="pill flag">${esc(f)}</span>`).join('')}
         ${r.review_score != null ? `<span class="pill">written ${r.review_score}</span>` : ''}
         ${bucket === '@starred' ? `<span class="pill st">${esc(stage(r.status).label)}</span>` : ''}
+        <span class="when">${esc(ago(r.created_at))}</span>
         <button class="star${r.starred ? ' on' : ''}" data-star="${r.id}" aria-label="${r.starred ? 'Remove star' : 'Star this candidate'}" aria-pressed="${!!r.starred}">&#9733;</button>
       </span>
     </div>`).join('') : `<p class="empty">Nothing ${bucket === '@starred' ? 'starred yet.' : 'in ' + esc(stage(bucket).label).toLowerCase() + '.'}</p>`;
@@ -298,7 +429,12 @@ function closeProfile() {
   $('shell').hidden = false;
   render();
 }
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('profile').hidden) closeProfile(); });
+window.addEventListener('popstate', () => { if (!$('profile').hidden) closeProfile(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!$('modal').hidden) { closePeek(); return; }
+  if (!$('profile').hidden) closeProfile();
+});
 
 /* Work links. Candidates paste full URLs, bare domains, or bare handles, often
    several at once. These rules match the ones the application form validates
@@ -318,10 +454,68 @@ function workLinksHtml(raw) {
   const chips = links.map(t => {
     const h = hrefFor(t);
     const kind = t.startsWith('@') ? ' <span class="hint">handle</span>' : '';
-    return `<a class="wl" href="${esc(h)}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>${esc(t)}${kind}</a>`;
+    return `<button class="wl" data-peek="${esc(h)}"><i class="ph ph-play-circle"></i>${esc(t)}${kind}</button>`;
   }).join('');
   return `<span class="wls">${chips}</span>` + (words ? `<span class="wnote">${esc(words)}</span>` : '');
 }
+
+/* Open a link inside the dashboard rather than a new tab. Instagram and
+   YouTube get a real embed, so you can watch without leaving, and the bar
+   always shows the address the link actually resolves to, which is how you
+   catch one that has been swapped for something else. */
+function embedFor(url) {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, '');
+    if (/^(youtube\.com|m\.youtube\.com)$/.test(host)) {
+      const id = u.searchParams.get('v') || (u.pathname.match(/\/shorts\/([\w-]+)/) || [])[1];
+      if (id) return { src: 'https://www.youtube.com/embed/' + id, note: '' };
+    }
+    if (host === 'youtu.be') {
+      const id = u.pathname.slice(1);
+      if (id) return { src: 'https://www.youtube.com/embed/' + id, note: '' };
+    }
+    if (host === 'instagram.com') {
+      const m = u.pathname.match(/\/(p|reel|tv)\/([\w-]+)/);
+      if (m) return { src: `https://www.instagram.com/${m[1]}/${m[2]}/embed`, note: '' };
+      return { src: null, note: 'Instagram does not allow profiles to be shown inside another page. Open it to check the account.' };
+    }
+    if (host === 'drive.google.com') {
+      const m = u.pathname.match(/\/file\/d\/([\w-]+)/);
+      if (m) return { src: `https://drive.google.com/file/d/${m[1]}/preview`, note: '' };
+      return { src: null, note: 'A Drive folder cannot be shown here. Open it to look inside.' };
+    }
+    if (host === 'vimeo.com') {
+      const id = u.pathname.split('/').filter(Boolean)[0];
+      if (/^\d+$/.test(id)) return { src: 'https://player.vimeo.com/video/' + id, note: '' };
+    }
+  } catch (e) { /* not a URL we can parse */ }
+  return { src: null, note: 'This site cannot be shown inside the dashboard. Open it in a tab instead.' };
+}
+
+function peek(url) {
+  const { src, note } = embedFor(url);
+  $('mUrl').textContent = url;
+  $('mOpen').href = url;
+  $('mNote').textContent = note;
+  $('mBody').innerHTML = src
+    ? `<iframe src="${esc(src)}" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="origin"></iframe>`
+    : `<div class="modal-msg"><i class="ph ph-arrow-square-out" style="font-size:32px"></i><p>${esc(note || 'No preview available.')}</p></div>`;
+  $('modal').hidden = false;
+  document.body.style.overflow = 'hidden';
+  $('mClose').focus();
+}
+function closePeek() {
+  $('modal').hidden = true;
+  $('mBody').innerHTML = '';
+  document.body.style.overflow = '';
+}
+$('mClose').addEventListener('click', closePeek);
+$('modal').addEventListener('click', (e) => { if (e.target === $('modal')) closePeek(); });
+$('mCopy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('mUrl').textContent); $('mCopy').innerHTML = '<i class="ph ph-check"></i>Copied';
+        setTimeout(() => { $('mCopy').innerHTML = '<i class="ph ph-copy"></i>Copy link'; }, 1800); } catch (e) {}
+});
 
 function drawProfile() {
   const r = rows.find(x => x.id === selId);
@@ -358,6 +552,7 @@ function drawProfile() {
         ${(r.flags || []).map(f => `<span class="pill flag">${esc(f)}</span>`).join('')}
       </div>
       <div class="contact">
+        ${r.answers && r.answers.ig ? `<a href="https://www.instagram.com/${esc(r.answers.ig)}" target="_blank" rel="noopener"><i class="ph ph-instagram-logo"></i>@${esc(r.answers.ig)}</a>` : ''}
         <a href="https://wa.me/91${esc(phone)}" target="_blank" rel="noopener"><i class="ph ph-whatsapp-logo"></i>${esc(r.phone)}</a>
         <a href="tel:+91${esc(phone)}"><i class="ph ph-phone"></i>Call</a>
         <a href="mailto:${esc(r.email)}"><i class="ph ph-envelope-simple"></i>${esc(r.email)}</a>
@@ -366,7 +561,7 @@ function drawProfile() {
         <div class="fact"><dt>Automatic score</dt><dd>${r.auto_score} / 100</dd></div>
         <div class="fact"><dt>Written answers</dt><dd>${r.review_score != null ? r.review_score + ' / 100' : 'Not scored'}</dd></div>
         <div class="fact"><dt>Reference</dt><dd class="mono">${esc(r.reference)}</dd></div>
-        <div class="fact"><dt>Applied</dt><dd>${new Date(r.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</dd></div>
+        <div class="fact"><dt>Applied</dt><dd>${esc(ago(r.created_at))}<br><span class="muted" style="font-size:12px">${new Date(r.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</span></dd></div>
       </dl>
     </div>
 
@@ -387,11 +582,10 @@ function drawProfile() {
 
   $('proFoot').innerHTML = `
     <p class="moveErr" id="moveErr" hidden></p>
-    ${st.end ? '' : '<button class="btn danger" id="aReject"><i class="ph ph-x"></i>Reject</button>'}
-    ${['task','interview','awaiting'].includes(st.id) ? '<button class="btn danger" id="aCallReject"><i class="ph ph-phone-x"></i>Called, rejected</button>' : ''}
-    <span class="grow"></span>
-    ${st.next ? `<button class="btn p" id="aNext">Proceed to ${esc(stage(st.next).label.toLowerCase())}<i class="ph ph-arrow-right"></i></button>`
-              : '<span class="muted" style="font-size:13px">No further stage</span>'}`;
+    <div class="verdicts">
+      ${VERDICTS.map(v => `<button class="btn ${v.cls}${r.status === v.id ? ' on' : ''}" data-verdict="${v.id}">
+        <i class="ph ${v.icon}"></i>${esc(v.label)}</button>`).join('')}
+    </div>`;
 
   $('proMove').innerHTML = '<span>Move to</span>' + STAGES
     .filter(s => s.id !== r.status)
@@ -399,9 +593,10 @@ function drawProfile() {
 
   $('dSave').addEventListener('click', () => saveReview(r));
   $('proStar').addEventListener('click', () => toggleStar(r.id));
-  const nx = $('aNext'); if (nx) nx.addEventListener('click', () => move(r, st.next, true));
-  const rj = $('aReject'); if (rj) rj.addEventListener('click', () => move(r, 'rejected', true));
-  const cr = $('aCallReject'); if (cr) cr.addEventListener('click', () => move(r, 'call_rejected', true));
+  $('proBody').querySelectorAll('[data-peek]').forEach(b =>
+    b.addEventListener('click', () => peek(b.dataset.peek)));
+  $('proFoot').querySelectorAll('[data-verdict]').forEach(b =>
+    b.addEventListener('click', () => move(r, b.dataset.verdict, true)));
   $('proMove').querySelectorAll('button').forEach(b =>
     b.addEventListener('click', () => move(r, b.dataset.s, false)));
 }
@@ -493,10 +688,9 @@ $('csv').addEventListener('click', () => {
   setTimeout(() => window.URL.revokeObjectURL(href), 1000);
 });
 
-['fRole','fSearch'].forEach(id => {
-  $(id).addEventListener('input', render);
-  $(id).addEventListener('change', render);
-});
+$('fSearch').addEventListener('input', render);
+$('toHome').addEventListener('click', showHome);
+$('outHome').addEventListener('click', async () => { await db.auth.signOut(); location.reload(); });
 
 db.auth.getSession().then(({ data }) => { if (data.session) start(); });
 </script>
