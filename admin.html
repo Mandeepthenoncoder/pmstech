@@ -140,15 +140,22 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
 
 .modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
 .modal[hidden]{display:none}
-.modal-in{width:min(460px,100%);max-height:92dvh;display:grid;grid-template-rows:auto 1fr auto;background:var(--s1);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.modal-in{width:min(540px,100%);max-height:94dvh;display:grid;grid-template-rows:auto 1fr auto;background:var(--s1);border:1px solid var(--line);border-radius:20px;overflow:hidden}
 .modal-top{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
-.modal-top .u{flex:1;min-width:0;font-family:var(--mono);font-size:12px;line-height:16px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.modal-body{background:#000;display:grid;place-items:center;min-height:320px;overflow:auto}
-.modal-body iframe{width:100%;height:min(70dvh,640px);border:0;display:block}
+/* The host is the part that tells you whether the link is what it claims, so
+   it is bold, first, and never the part that gets truncated. */
+.modal-top .u{flex:1;min-width:0;display:flex;align-items:baseline;gap:2px;font-family:var(--mono);font-size:12px;line-height:16px;color:var(--muted)}
+.modal-top .u b{flex:none;color:var(--text);font-weight:600}
+.modal-top .u span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal-body{background:#000;display:block;min-height:320px;overflow-x:hidden;overflow-y:auto}
+.modal-body iframe{width:100%;height:min(74dvh,720px);border:0;display:block}
 .modal-msg{padding:40px 24px;text-align:center;color:var(--muted);font-size:14px;line-height:20px;display:grid;gap:14px;justify-items:center}
 .modal-foot{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px;border-top:1px solid var(--line);align-items:center}
 .modal-foot .grow{flex:1}
-.redir{font-size:12px;line-height:16px;color:var(--warn)}
+/* Notes here can run to a sentence, so give them their own row rather than
+   letting them squeeze Copy and Open. Empty, it collapses and costs nothing. */
+.redir{flex:1 1 100%;font-size:12px;line-height:16px;color:var(--warn)}
+.redir:empty{display:none}
 
 .review{display:grid;gap:14px;padding:18px;border-radius:18px;border:1px solid var(--line);background:var(--s1)}
 .review label{font-size:13px;line-height:18px;font-weight:500;display:block;margin-bottom:6px}
@@ -225,8 +232,7 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="Preview">
   <div class="modal-in">
     <div class="modal-top">
-      <i class="ph ph-link" aria-hidden="true"></i>
-      <span class="u" id="mUrl"></span>
+      <span class="u"><b id="mHost"></b><span id="mPath"></span></span>
       <button class="btn g sm" id="mClose" aria-label="Close preview"><i class="ph ph-x"></i></button>
     </div>
     <div class="modal-body" id="mBody"></div>
@@ -477,7 +483,8 @@ function embedFor(url) {
     }
     if (host === 'instagram.com') {
       const m = u.pathname.match(/\/(p|reel|tv)\/([\w-]+)/);
-      if (m) return { src: `https://www.instagram.com/${m[1]}/${m[2]}/embed`, note: '' };
+      if (m) return { src: `https://www.instagram.com/${m[1]}/${m[2]}/embed/captioned`,
+                      note: 'Instagram only plays reels on its own site — press play and it opens there. The cover frame and the account name are enough to tell whether the link still matches.' };
       return { src: null, note: 'Instagram does not allow profiles to be shown inside another page. Open it to check the account.' };
     }
     if (host === 'drive.google.com') {
@@ -493,9 +500,34 @@ function embedFor(url) {
   return { src: null, note: 'This site cannot be shown inside the dashboard. Open it in a tab instead.' };
 }
 
+/* Tracking junk that Instagram, YouTube and the rest staple on when a link is
+   copied from a phone. It says nothing about where the link goes, and it is
+   long enough to push the real address out of sight. */
+const NOISE = /^(stkn|igsh|igshid|si|feature|utm_[a-z_]+|fbclid|gclid|mibextid|_nc_\w+)$/i;
+
+/* Split for display: the host is what tells you whether a link is what it
+   claims to be, so it is shown whole and the path is what gets truncated. */
+function urlParts(url) {
+  try {
+    const u = new URL(url);
+    for (const k of [...u.searchParams.keys()]) if (NOISE.test(k)) u.searchParams.delete(k);
+    return { host: u.hostname.replace(/^www\./, ''), path: u.pathname + u.search + u.hash };
+  } catch (e) {
+    const s = String(url).replace(/^https?:\/\//i, '').replace(/^www\./i, '');
+    const cut = s.search(/[/?#]/);
+    return cut < 0 ? { host: s, path: '' } : { host: s.slice(0, cut), path: s.slice(cut) };
+  }
+}
+
+let peekUrl = '';
+
 function peek(url) {
   const { src, note } = embedFor(url);
-  $('mUrl').textContent = url;
+  const { host, path } = urlParts(url);
+  peekUrl = url;
+  $('mHost').textContent = host;
+  $('mPath').textContent = path === '/' ? '' : path;
+  $('mPath').title = url;
   $('mOpen').href = url;
   $('mNote').textContent = note;
   $('mBody').innerHTML = src
@@ -513,7 +545,7 @@ function closePeek() {
 $('mClose').addEventListener('click', closePeek);
 $('modal').addEventListener('click', (e) => { if (e.target === $('modal')) closePeek(); });
 $('mCopy').addEventListener('click', async () => {
-  try { await navigator.clipboard.writeText($('mUrl').textContent); $('mCopy').innerHTML = '<i class="ph ph-check"></i>Copied';
+  try { await navigator.clipboard.writeText(peekUrl); $('mCopy').innerHTML = '<i class="ph ph-check"></i>Copied';
         setTimeout(() => { $('mCopy').innerHTML = '<i class="ph ph-copy"></i>Copy link'; }, 1800); } catch (e) {}
 });
 
