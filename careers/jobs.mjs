@@ -150,6 +150,11 @@ export const jobs = [
         help: 'Any medium. We care about the "what you did next" part.'
       },
       {
+        id: 'ig', type: 'text', weight: 1, max: 60, review: true, handle: true,
+        label: 'Your Instagram handle.',
+        help: 'Just the handle, like yourname. Not a link. This is how we find you if a link stops working.'
+      },
+      {
         id: 'work', type: 'text', weight: 1, max: 600, review: true, link: true,
         label: 'Links to content you have made.',
         help: 'As many as you like, one per line. A profile, a Reel, a YouTube video, anything you shot or cut yourself. Handles such as @yourname work too. Your own account is fine.'
@@ -375,6 +380,11 @@ export const jobs = [
         help: 'We want the decisions, not the brief.'
       },
       {
+        id: 'ig', type: 'text', weight: 1, max: 60, review: true, handle: true,
+        label: 'Your Instagram handle.',
+        help: 'Just the handle, like yourname. Not a link. This is how we find you if a link stops working.'
+      },
+      {
         id: 'work', type: 'text', weight: 1, max: 600, review: true, link: true,
         label: 'Links to your portfolio or recent work.',
         help: 'As many as you like, one per line. Behance, Dribbble, Instagram, a Drive folder, or a handle such as @yourname. Check the sharing is open so we can see it.'
@@ -585,6 +595,11 @@ export const jobs = [
         id: 'q6', type: 'text', weight: 1, max: 280, review: true,
         label: 'Rewrite this opening line so people stay: "Hi guys, welcome back to the channel, today we are going to talk about AI tools."',
         help: 'One line.'
+      },
+      {
+        id: 'ig', type: 'text', weight: 1, max: 60, review: true, handle: true,
+        label: 'Your Instagram handle.',
+        help: 'Just the handle, like yourname. Not a link. This is how we find you if a link stops working.'
       },
       {
         id: 'work', type: 'text', weight: 1, max: 600, review: true, link: true,

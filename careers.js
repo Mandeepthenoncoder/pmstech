@@ -234,6 +234,20 @@
      often several at once. The same rules run in the dashboard, so anything
      accepted here renders as a clickable link there. Keep the two in step. */
   var LINK_TOKEN = /^(https?:\/\/\S{4,}|(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/\S*)?|@[A-Za-z0-9._]{2,})$/i;
+  /* People type @name, instagram.com/name, or a full profile URL. We store the
+     bare handle, so it is one thing we can check rather than a link that can
+     point anywhere or stop working. */
+  function cleanHandle(v) {
+    return String(v || '')
+      .trim()
+      .replace(/^https?:\/\//i, '')
+      .replace(/^www\./i, '')
+      .replace(/^instagram\.com\//i, '')
+      .replace(/^@/, '')
+      .replace(/[/?#].*$/, '')
+      .trim();
+  }
+
   function workLinks(v) {
     return String(v || '')
       .split(/[\s,]+/)
@@ -250,6 +264,12 @@
       else if (q.id === 'phone') { if (!PHONE_RE.test(String(v || '').replace(/[\s-]/g, ''))) bad = 'Enter a 10 digit Indian mobile number.'; }
       else if (q.id === 'email') { if (!EMAIL_RE.test(v || '')) bad = 'Enter a valid email address.'; }
       else if (q.type === 'multi') { if (!v || !v.length) bad = 'Pick at least one.'; }
+      else if (q.handle) {
+        var h = cleanHandle(v);
+        if (!h) bad = 'Please add your Instagram handle.';
+        else if (!/^[A-Za-z0-9._]{2,30}$/.test(h)) bad = 'Just the handle, like yourname. Letters, numbers, dots and underscores.';
+        else state[q.id] = h;
+      }
       else if (q.link) {
         if (!v) bad = 'Please add at least one link to your work.';
         else if (!workLinks(v).length) bad = 'We could not find a link in there. Paste a web address, or a handle like @yourname.';
