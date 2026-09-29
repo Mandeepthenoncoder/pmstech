@@ -104,6 +104,20 @@ select,.search{padding:8px 12px;border-radius:9999px;border:1px solid var(--line
 .qa .a{font-size:16px;line-height:24px;padding:12px 14px;border-radius:12px;background:var(--s1);border:1px solid var(--line);white-space:pre-wrap;overflow-wrap:anywhere}
 .qa .a.work{border-color:var(--accent)}
 .qa .a a{overflow-wrap:anywhere}
+.wls{display:flex;flex-wrap:wrap;gap:8px}
+.wl{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:7px 12px;border-radius:9999px;border:1px solid var(--line);background:var(--bg);color:var(--accent-t);text-decoration:none;font-size:14px;line-height:20px;overflow-wrap:anywhere;transition:all 700ms var(--ease)}
+.wl:hover{border-color:var(--accent);background:var(--s3)}
+.wl i{font-size:15px;flex:none;opacity:.8}
+.wl .hint{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:9999px;padding:0 6px}
+.wnote{display:block;margin-top:10px;color:var(--muted);font-size:14px;line-height:20px}
+.star{background:none;border:0;cursor:pointer;color:var(--line);font-size:22px;line-height:1;padding:4px;transition:color 700ms var(--ease),transform 700ms var(--ease)}
+.star:hover{color:var(--warn);transform:scale(1.1)}
+.star.on{color:var(--warn)}
+.star.big{font-size:28px}
+.bucket.starred.on{background:var(--warn);border-color:var(--warn);color:#000}
+.moveErr{width:100%;margin:0 0 10px;padding:10px 14px;border-radius:12px;border:1px solid var(--bad);background:rgba(248,113,113,.12);color:var(--bad);font-size:14px;line-height:20px}
+.moveErr[hidden]{display:none}
+.moveErr b{display:block;margin-bottom:2px}
 
 .review{display:grid;gap:14px;padding:18px;border-radius:18px;border:1px solid var(--line);background:var(--s1)}
 .review label{font-size:13px;line-height:18px;font-weight:500;display:block;margin-bottom:6px}
@@ -213,7 +227,7 @@ async function start() {
 }
 
 async function load() {
-  const { data, error } = await db.from('applications').select('*').order('auto_score', { ascending: false });
+  const { data, error } = await db.from('applications').select('*').order('starred', { ascending: false }).order('auto_score', { ascending: false });
   if (error) {
     $('list').innerHTML = `<p class="empty">Could not load applications.<br><span class="mono">${esc(error.message)}</span><br><br>If that says permission denied, your account is not on the admin list. Run <span class="mono">select public.add_admin('your@email');</span> in Supabase.</p>`;
     return;
@@ -231,33 +245,42 @@ function matchesFilters(r) {
   return (!role || r.role_title === role) &&
          (!q || [r.name, r.email, r.reference, r.phone].join(' ').toLowerCase().includes(q));
 }
-const inBucket = () => rows.filter(r => matchesFilters(r) && r.status === bucket);
+const inBucket = () => bucket === '@starred'
+  ? rows.filter(r => matchesFilters(r) && r.starred)
+  : rows.filter(r => matchesFilters(r) && r.status === bucket);
 
 function render() {
   const base = rows.filter(matchesFilters);
+  const starCount = base.filter(r => r.starred).length;
   $('buckets').innerHTML = STAGES.map(s => {
     const n = base.filter(r => r.status === s.id).length;
     return `<button class="bucket${s.id === bucket ? ' on' : ''}" data-b="${s.id}">${esc(s.label)}<b>${n}</b></button>`;
-  }).join('');
+  }).join('') +
+  `<button class="bucket starred${bucket === '@starred' ? ' on' : ''}" data-b="@starred" title="Everyone you starred, whatever stage they are at">&#9733; Starred<b>${starCount}</b></button>`;
   $('buckets').querySelectorAll('.bucket').forEach(b =>
     b.addEventListener('click', () => { bucket = b.dataset.b; render(); }));
 
   const list = inBucket();
   $('count').textContent = `${base.length} in total`;
   $('list').innerHTML = list.length ? list.map(r => `
-    <button class="row" data-id="${r.id}">
+    <div class="row" data-id="${r.id}" role="button" tabindex="0">
       <span class="score ${band(r.auto_score)}">${r.auto_score}</span>
       <span class="who"><b>${esc(r.name)}</b><span>${esc(r.role_title)} &middot; ${esc(r.email)}</span></span>
       <span class="pills">
         ${r.knockout ? '<span class="pill ko">knocked out</span>' : ''}
         ${(r.flags || []).map(f => `<span class="pill flag">${esc(f)}</span>`).join('')}
         ${r.review_score != null ? `<span class="pill">written ${r.review_score}</span>` : ''}
-        <i class="ph ph-caret-right muted"></i>
+        ${bucket === '@starred' ? `<span class="pill st">${esc(stage(r.status).label)}</span>` : ''}
+        <button class="star${r.starred ? ' on' : ''}" data-star="${r.id}" aria-label="${r.starred ? 'Remove star' : 'Star this candidate'}" aria-pressed="${!!r.starred}">&#9733;</button>
       </span>
-    </button>`).join('') : `<p class="empty">Nothing in ${esc(stage(bucket).label).toLowerCase()}.</p>`;
+    </div>`).join('') : `<p class="empty">Nothing ${bucket === '@starred' ? 'starred yet.' : 'in ' + esc(stage(bucket).label).toLowerCase() + '.'}</p>`;
 
-  $('list').querySelectorAll('.row').forEach(b =>
-    b.addEventListener('click', () => openProfile(b.dataset.id)));
+  $('list').querySelectorAll('.row').forEach(b => {
+    b.addEventListener('click', (e) => { if (!e.target.closest('[data-star]')) openProfile(b.dataset.id); });
+    b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProfile(b.dataset.id); } });
+  });
+  $('list').querySelectorAll('[data-star]').forEach(b =>
+    b.addEventListener('click', (e) => { e.stopPropagation(); toggleStar(b.dataset.star); }));
 }
 
 /* -------------------------------------------------------------- profile */
@@ -277,6 +300,29 @@ function closeProfile() {
 }
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('profile').hidden) closeProfile(); });
 
+/* Work links. Candidates paste full URLs, bare domains, or bare handles, often
+   several at once. These rules match the ones the application form validates
+   with, so anything it accepted shows up here as something you can click. */
+const LINK_TOKEN = /^(https?:\/\/\S{4,}|(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/\S*)?|@[A-Za-z0-9._]{2,})$/i;
+function hrefFor(t) {
+  if (/^https?:\/\//i.test(t)) return t;
+  if (t.startsWith('@')) return 'https://www.instagram.com/' + t.slice(1);
+  return 'https://' + t;
+}
+function workLinksHtml(raw) {
+  const text = String(raw || '');
+  const parts = text.split(/[\s,]+/).map(t => t.replace(/[.,;)]+$/, '').trim()).filter(Boolean);
+  const links = parts.filter(t => LINK_TOKEN.test(t));
+  if (!links.length) return esc(text);
+  const words = parts.filter(t => !LINK_TOKEN.test(t)).join(' ');
+  const chips = links.map(t => {
+    const h = hrefFor(t);
+    const kind = t.startsWith('@') ? ' <span class="hint">handle</span>' : '';
+    return `<a class="wl" href="${esc(h)}" target="_blank" rel="noopener"><i class="ph ph-arrow-square-out"></i>${esc(t)}${kind}</a>`;
+  }).join('');
+  return `<span class="wls">${chips}</span>` + (words ? `<span class="wnote">${esc(words)}</span>` : '');
+}
+
 function drawProfile() {
   const r = rows.find(x => x.id === selId);
   if (!r) return closeProfile();
@@ -292,11 +338,7 @@ function drawProfile() {
     const meta = L.questions[k] || {};
     const text = Array.isArray(v) ? v.map(x => (meta.options || {})[x] || x).join(', ')
                                   : (meta.options || {})[v] || v;
-    const s = String(text).trim();
-    const isLink = /^(https?:\/\/|www\.)/i.test(s);
-    const body = isLink
-      ? `<a href="${esc(s.replace(/^www\./i, 'https://www.'))}" target="_blank" rel="noopener">${esc(s)}</a>`
-      : esc(text);
+    const body = k === 'work' ? workLinksHtml(text) : esc(text);
     return `<div><p class="q">${esc(meta.label || k)}</p><p class="a${k === 'work' ? ' work' : ''}">${body}</p></div>`;
   }).join('');
 
@@ -310,6 +352,7 @@ function drawProfile() {
           <p class="pro-sub">${esc(r.role_title)} &middot; ${esc(r.brand)}</p>
         </div>
         <span class="grow"></span>
+        <button class="star big${r.starred ? ' on' : ''}" id="proStar" aria-label="${r.starred ? 'Remove star' : 'Star this candidate'}" aria-pressed="${!!r.starred}">&#9733;</button>
         <span class="pill st">${esc(st.label)}</span>
         ${r.knockout ? '<span class="pill ko">knocked out</span>' : ''}
         ${(r.flags || []).map(f => `<span class="pill flag">${esc(f)}</span>`).join('')}
@@ -343,6 +386,7 @@ function drawProfile() {
     </div>`;
 
   $('proFoot').innerHTML = `
+    <p class="moveErr" id="moveErr" hidden></p>
     ${st.end ? '' : '<button class="btn danger" id="aReject"><i class="ph ph-x"></i>Reject</button>'}
     ${['task','interview','awaiting'].includes(st.id) ? '<button class="btn danger" id="aCallReject"><i class="ph ph-phone-x"></i>Called, rejected</button>' : ''}
     <span class="grow"></span>
@@ -354,11 +398,40 @@ function drawProfile() {
     .map(s => `<button data-s="${s.id}">${esc(s.label)}</button>`).join('');
 
   $('dSave').addEventListener('click', () => saveReview(r));
+  $('proStar').addEventListener('click', () => toggleStar(r.id));
   const nx = $('aNext'); if (nx) nx.addEventListener('click', () => move(r, st.next, true));
   const rj = $('aReject'); if (rj) rj.addEventListener('click', () => move(r, 'rejected', true));
   const cr = $('aCallReject'); if (cr) cr.addEventListener('click', () => move(r, 'call_rejected', true));
   $('proMove').querySelectorAll('button').forEach(b =>
     b.addEventListener('click', () => move(r, b.dataset.s, false)));
+}
+
+async function toggleStar(id) {
+  const r = rows.find(x => x.id === id);
+  if (!r) return;
+  const want = !r.starred;
+  r.starred = want;                       // show it at once
+  if (selId === id) drawProfile(); else render();
+  const { error } = await db.from('applications').update({ starred: want }).eq('id', id);
+  if (error) {
+    r.starred = !want;                    // put it back
+    if (selId === id) drawProfile(); else render();
+    showMoveError('Could not save the star', error.message);
+  }
+}
+
+/* A failed move used to write into the review card, which is usually scrolled
+   out of sight, so it looked like nothing happened. Errors now appear with the
+   buttons that caused them. */
+function showMoveError(what, detail) {
+  const el = $('moveErr');
+  const stale = /check constraint|violates|invalid input value/i.test(detail || '');
+  const msg = stale
+    ? 'The database still has the old stage names. Run supabase/dashboard-update.sql in the Supabase SQL editor, then reload this page.'
+    : detail;
+  if (!el) { alert(what + ': ' + msg); return; }
+  el.innerHTML = `<b>${esc(what)}</b>${esc(msg)}`;
+  el.hidden = false;
 }
 
 async function saveReview(r) {
@@ -384,8 +457,7 @@ async function move(r, to, advance) {
   const idx = siblings.findIndex(x => x.id === r.id);
   const { error } = await db.from('applications').update({ status: to }).eq('id', r.id);
   if (error) {
-    const msg = $('dSaved');
-    if (msg) { msg.style.color = 'var(--bad)'; msg.textContent = error.message; }
+    showMoveError('Could not move to ' + stage(to).label.toLowerCase(), error.message);
     return;
   }
   r.status = to;
@@ -401,7 +473,7 @@ async function move(r, to, advance) {
 $('csv').addEventListener('click', () => {
   const list = rows.filter(matchesFilters);
   if (!list.length) return;
-  const cols = ['reference','created_at','role_title','brand','name','email','phone','auto_score','review_score','knockout','flags','status','notes'];
+  const cols = ['reference','created_at','role_title','brand','name','email','phone','starred','auto_score','review_score','knockout','flags','status','notes'];
   const cell = (v) => {
     if (v == null) return '';
     const s = Array.isArray(v) ? v.join(' ') : String(v);

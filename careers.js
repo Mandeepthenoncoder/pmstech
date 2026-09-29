@@ -229,10 +229,17 @@
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   var PHONE_RE = /^(\+?91[\s-]?)?[6-9]\d{9}$/;
-  /* A link field has to get a real link, otherwise "my instagram" passes and
-     we learn nothing. Accepts a bare domain or an @handle too, since that is
-     what people type on a phone. */
-  var URL_RE = /(https?:\/\/|www\.)[^\s]{4,}|[a-z0-9-]+\.[a-z]{2,}\/[^\s]*|(^|\s)@[A-Za-z0-9._]{2,}/i;
+
+  /* Work links. People paste a full URL, a bare domain, or just a handle, and
+     often several at once. The same rules run in the dashboard, so anything
+     accepted here renders as a clickable link there. Keep the two in step. */
+  var LINK_TOKEN = /^(https?:\/\/\S{4,}|(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/\S*)?|@[A-Za-z0-9._]{2,})$/i;
+  function workLinks(v) {
+    return String(v || '')
+      .split(/[\s,]+/)
+      .map(function (t) { return t.replace(/[.,;)]+$/, '').trim(); })
+      .filter(function (t) { return LINK_TOKEN.test(t); });
+  }
 
   function validate(s) {
     var ok = true, first = null;
@@ -244,8 +251,8 @@
       else if (q.id === 'email') { if (!EMAIL_RE.test(v || '')) bad = 'Enter a valid email address.'; }
       else if (q.type === 'multi') { if (!v || !v.length) bad = 'Pick at least one.'; }
       else if (q.link) {
-        if (!v) bad = 'Please add a link to your work.';
-        else if (!URL_RE.test(v)) bad = 'That does not look like a link. Paste a web address, or your @handle.';
+        if (!v) bad = 'Please add at least one link to your work.';
+        else if (!workLinks(v).length) bad = 'We could not find a link in there. Paste a web address, or a handle like @yourname.';
       }
       else if (q.type === 'text') { if (!v || v.length < 8) bad = 'A line or two, please.'; }
       else if (q.type === 'choice') { if (!v) bad = 'Pick one.'; }
